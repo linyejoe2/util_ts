@@ -1,6 +1,6 @@
-// version 0.0.8
+// version 0.0.9
 // by Randy Lin
-// 2025/12/17
+// 2026/06/01
 
 /**
  * need to install these depandancy
@@ -13,6 +13,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import isBetween from "dayjs/plugin/isBetween";
 import minMax from 'dayjs/plugin/minMax'
+import { readFile } from 'fs/promises';
 
 // Extend dayjs with plugins
 dayjs.extend(utc);
@@ -238,3 +239,33 @@ export const fuzzySearchApproval = (
     );
   });
 };
+
+/**
+ * Reads a file and parses its contents as JSON.
+ *
+ * @param filePath - The absolute or relative path to the JSON file.
+ * @returns A promise that resolves to the parsed JSON data.
+ * @throws Throws an error if the file cannot be read or if the content is invalid JSON.
+ *
+ * @example
+ * // Usage in an async function:
+ * try {
+ * const data = await parseJSONfromFile('./config.json');
+ * console.log(data.version);
+ * } catch (error) {
+ * console.error('Failed to parse JSON:', error.message);
+ * }
+ */
+export async function parseJSONfromFile(filePath: string): Promise<any> {
+  try {
+    const fileContent = await readFile(filePath, 'utf-8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    // Enhance the error message to make debugging easier
+    if (error instanceof Error) {
+      throw new Error(`Failed to parse JSON from file at "${filePath}": ${error.message}`);
+    }
+    console.error(error)
+    throw new Error(`Failed to parse JSON from file at "${filePath}": Unknown error.`);
+  }
+}
